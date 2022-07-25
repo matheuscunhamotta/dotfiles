@@ -1,0 +1,4 @@
+[init]
+	defaultBranch = master
+[core]
+	editor = vim
