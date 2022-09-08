@@ -5,9 +5,8 @@
 # -v: natural sort (.dotfiles first, then by name, etc)
 alias l='ls -lAhv --group-directories-first'
 
-# Debian renamed bat to batcat. Only set if batcat is in path.
-type batcat >/dev/null 2>&1 && alias cat=batcat
-type batcat >/dev/null 2>&1 && alias bat=batcat
+# Debian renamed bat to batcat.
+type batcat >/dev/null 2>&1 && alias cat=batcat && alias bat=batcat
 
 # Change to projects directory.
 alias c='cd ~/code/'

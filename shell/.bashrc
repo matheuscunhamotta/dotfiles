@@ -112,3 +112,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Include environment variables file.
+if [ -f ~/.envs.sh ]; then
+    . ~/.envs.sh
+fi
