@@ -1,3 +1,5 @@
+alias ..='cd ..'
+
 # Description of ls options:
 # -l: use a long listing format
 # -A: list everything except . and .. directories
@@ -13,4 +15,3 @@ alias c='cd ~/code/'
 
 # Fix tmux color issue. Disabled since we fixed it in .tmux.conf.
 #alias tmux='TERM=screen-256color-bce tmux'
-
