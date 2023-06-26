@@ -17,6 +17,9 @@ type fzf >/dev/null 2>&1 && type fdfind >/dev/null 2>&1 && export \
 type fzf >/dev/null 2>&1 && type batcat >/dev/null 2>&1 && export \
     FZF_DEFAULT_OPTS="--preview='batcat --style=numbers --color=always --line-range :200 {}'"
 
+# Use bat as man pager.
+type bat >/dev/null 2>&1 && export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 # Prompt with git branch.
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
