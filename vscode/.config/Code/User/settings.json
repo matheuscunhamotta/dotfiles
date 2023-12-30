@@ -3,7 +3,6 @@
   "editor.lineNumbers": "relative",
   "workbench.colorTheme": "Default Dark Modern",
   "telemetry.telemetryLevel": "off",
-  "window.zoomLevel": 1,
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -21,5 +20,18 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "editor.stickyScroll.enabled": true,
+  "vim.handleKeys": {
+    // Temporary workaround for a conflict with vscode fuzzy finder.
+    "<C-p>": false
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "remote.autoForwardPortsSource": "hybrid"
 }
