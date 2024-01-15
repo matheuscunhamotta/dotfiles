@@ -154,3 +154,10 @@ fi
 if [[ -x "$bat_command" ]]; then
     export MANPAGER="sh -c 'col -bx | ${bat_command} -l man -p'"
 fi
+
+# Set podman as docker host. This makes docker-compose use podman instead of
+# docker. With this and the podman-docker wrapper, 3rd party applications that
+# do not support podman work without having docker installed. The podman
+# service must be enabled with: `systemctl --user enable --now podman.socket`.
+# See `man podman-system-service`.
+export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
