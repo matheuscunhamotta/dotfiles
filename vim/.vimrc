@@ -42,6 +42,9 @@ set showmatch
 " Blink duration of brackets when cursor moves on it.
 set matchtime=1
 
+" Disable the `matchparen` plugin.
+let loaded_matchparen = 1
+
 " Reserve a column for the side fold indicator.
 set foldcolumn=1
 
