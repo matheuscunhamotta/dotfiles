@@ -3,13 +3,13 @@ set number
 set relativenumber
 
 " Highlight current line (ugly in some terminals/colorschemes).
-set cursorline
+"set cursorline
 
 " Set maximum text width. This is for the auto format option.
 set textwidth=79
 
 " Show vertical columns after `textwidth` (normal and python).
-set colorcolumn=+1,+10
+"set colorcolumn=+1,+10
 
 " Auto format code comments only. See `:h fo-table`.
 set formatoptions+=acjroql
@@ -124,4 +124,4 @@ set spelllang=en_us
 map <leader>s :setlocal spell!<CR>
 
 " A reduced brightness built-in theme. Another option: `slate`.
-colorscheme habamax
+"colorscheme habamax
