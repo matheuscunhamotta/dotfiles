@@ -1,0 +1,38 @@
+---
+
+# System setup playbook
+
+
+- name: Install CLI tools
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    common_packages:
+      - stow
+      - git
+      - neovim
+      - tmux
+      - fzf
+      - ripgrep
+      - fd-find
+      - bat
+    # These vars contain packages whose names differ between distros
+    debian_specific:  # Packages with Debian/Ubuntu-specific names
+      - vim           # 'vim' in Debian/Ubuntu, 'vim-enhanced' in Fedora
+    fedora_specific:  # Packages with Fedora-specific names
+      - vim-enhanced
+  tasks:
+    - name: Install required packages on Debian/Ubuntu
+      apt:
+        name: "{{ common_packages + debian_specific }}"
+        state: present
+        update_cache: true
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Install required packages on Fedora
+      dnf:
+        name: "{{ common_packages + fedora_specific }}"
+        state: present
+        update_cache: true
+      when: ansible_facts['os_family'] == 'RedHat'
