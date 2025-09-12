@@ -1,38 +1,51 @@
+
 # Copilot Instructions for AI Coding Agents
 
 ## Project Overview
-This repository manages personal dotfiles using GNU Stow for symlink management. Each subdirectory (e.g., `vim/`, `tmux/`, `shell/`, `ssh/`, `vscode/`, `git/`) represents a stow package containing configuration files for a specific tool or environment.
+This repository manages personal dotfiles and system setup using a structured approach:
+
+- **`stow/`**: Contains all stow packages (e.g., `git/`, `shell/`, `tmux/`, `vim/`, `vscode/`, `ssh/`). Each subdirectory is a package of config files for a specific tool. Symlinks are managed with GNU Stow.
+- **`ansible/`**: Contains Ansible playbooks, roles, and inventory for system provisioning and automation.
+- **`scripts/`**: Contains helper scripts, notably `bootstrap.sh` for initial setup.
+- **Top-level files**: `LICENSE`, `README.md`, `.github/`.
 
 ## Key Workflows
-- **Stowing a package:**
+- **Bootstrap everything:**
   ```sh
-  stow -t ~ <package name>
+  ./scripts/bootstrap.sh
   ```
-- **Resolving stow conflicts:**
-  1. `git stash -u` (optional, stash local changes)
-  2. `stow --adopt -t ~ <package name>` (adopt existing files)
-  3. `git restore .` (restore repo state)
-  4. `stow -t ~ <package name>` (retry stow)
-  5. `git stash pop` (optional, restore stashed changes)
+  - Installs stow if needed, stows all packages from `stow/`, and (optionally) runs Ansible.
+- **Stow a single package:**
+  ```sh
+  stow -d stow -t ~ <package>
+  ```
+- **Resolve stow conflicts:**
+  1. `git stash -u` (optional)
+  2. `stow --adopt -d stow -t ~ <package>`
+  3. `git restore .`
+  4. `stow -d stow -t ~ <package>`
+  5. `git stash pop` (optional)
+- **Provision with Ansible:**
+  ```sh
+  ansible-playbook ansible/playbook.yml
+  ```
 
-## Project Structure
-- Each top-level directory (except `.github/`, `LICENSE`, `README.md`) is a stow package.
-- Place new config files in the appropriate package directory.
-- Avoid duplicating config files across packages.
-
-## Conventions & Patterns
+## Project Structure & Conventions
+- All config packages live under `stow/` (not top-level).
 - Do **not** commit secrets or machine-specific settings.
-- Use relative symlinks where possible (GNU Stow default).
-- Keep package directories flat; avoid deep nesting unless required by the target application.
-- Document any non-obvious config customizations in the relevant package's README or as comments in the config file.
+- Use relative symlinks (GNU Stow default).
+- Keep package directories flat unless required by the target application.
+- Document non-obvious customizations in package README or config comments.
 
 ## Examples
-- To add a new Vim plugin, place its config in `vim/` and restow: `stow -t ~ vim`
-- To update tmux settings, edit files in `tmux/` and restow: `stow -t ~ tmux`
+- Add a new Vim config: place in `stow/vim/` and restow: `stow -d stow -t ~ vim`
+- Add a new Ansible role: place in `ansible/roles/` and reference in `playbook.yml`
+- Add a new bootstrap step: edit `scripts/bootstrap.sh`
 
 ## Reference
-- See the main `README.md` for stow/adopt workflow details.
-- For new tools, create a new package directory and follow the same stow pattern.
+- See `README.md` for stow/adopt workflow details.
+- For new tools, create a new package under `stow/` and follow the same pattern.
+- For system automation, use `ansible/`.
 
 ---
 For questions or unclear conventions, review the main `README.md` or ask for clarification.
