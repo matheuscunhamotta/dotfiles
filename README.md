@@ -1,18 +1,29 @@
-## Instructions
 
-Stow packages with:
+## Setup Instructions
 
-```shell
-stow -t ~ <package name>
-```
+1. **Run the Ansible playbook to install required packages:**
 
-If stow refuses to create the symlinks because of conflicts, then do this:
+	```sh
+	ansible-playbook ansible/playbook.yml
+	```
 
-- `git stash -u` # [Optional] Stash working directory changes, if any.
-- `stow --adopt -t ~ <package name>` # Adopt upstream files.
-- `git restore .` # Restore local files.
-- `stow -t ~ <package name>` # Try to stow again.
-- `git stash pop` # [Optional] restore stashed changes.
+	- This will install all necessary tools for either Debian/Ubuntu or Fedora.
+
+2. **Stow packages:**
+
+	```sh
+	stow -d stow -t ~ <package name>
+	```
+
+	- Example: `stow -d stow -t ~ vim`
+
+3. **If stow refuses to create the symlinks because of conflicts:**
+
+	- `git stash -u` # [Optional] Stash working directory changes, if any.
+	- `stow --adopt -d stow -t ~ <package name>` # Adopt upstream files.
+	- `git restore .` # Restore local files.
+	- `stow -d stow -t ~ <package name>` # Try to stow again.
+	- `git stash pop` # [Optional] restore stashed changes.
 
 ## License
 
