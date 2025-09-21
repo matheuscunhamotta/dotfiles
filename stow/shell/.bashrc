@@ -161,7 +161,7 @@ fi
 
 # Use bat as man pager.
 if [[ -x "$bat_command" ]]; then
-    export MANPAGER="sh -c 'col -bx | ${bat_command} -l man -p'"
+    export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | ${bat_command} -p -lman'"
 fi
 
 # Set podman as docker host. This makes docker-compose use podman instead of
