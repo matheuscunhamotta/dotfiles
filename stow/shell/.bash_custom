@@ -1,0 +1,54 @@
+# Custom settings bellow.
+
+# Start on tmux. https://wiki.archlinux.org/title/Tmux#Start_tmux_on_every_shell_login
+if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ] && [ -z "${TMUX}" ]; then
+    exec tmux new-session -A -s ${USER} >/dev/null 2>&1
+fi
+
+# Change to projects directory.
+alias c='cd ~/code'
+
+# Quick back.
+alias ..='cd ..'
+
+# -lAhv: long listing; exclude . and ..; human-readable sizes; natural sort.
+alias l='ls -lAhv --group-directories-first'
+
+# Debian renamed bat to batcat.
+bat_command=$(command -v batcat || command -v bat)
+if [[ -x "$bat_command" ]]; then
+    alias bat=batcat && alias cat=bat
+fi
+
+# Debian renamed fd to fdfind.
+fd_command=$(command -v fdfind || command -v fd)
+if [[ -x "$fd_command" ]]; then
+    alias fd=fdfind
+fi
+
+# Configure fzf to work with bat and fd when possible.
+if command -v fzf &> /dev/null; then
+    if [[ -x "$fd_command" ]]; then
+        # Configure fzf to use fd instead of find. See:
+        # https://github.com/junegunn/fzf#respecting-gitignore
+        export FZF_DEFAULT_COMMAND="${fd_command} --type f --strip-cwd-prefix --hidden --follow --exclude .git"
+    fi
+
+    if [[  -x "$bat_command" ]]; then
+        # Configure fzf to show a preview window using bat, despite the
+        # recommendation not to: https://github.com/junegunn/fzf#preview-window
+        export FZF_DEFAULT_OPTS="--preview='${bat_command} --style=numbers --color=always --line-range :200 {}'"
+    fi
+fi
+
+# Use bat as man pager.
+if [[ -x "$bat_command" ]]; then
+    export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | ${bat_command} -p -lman'"
+fi
+
+# Set podman as docker host. This makes docker-compose use podman instead of
+# docker. With this and the podman-docker wrapper, 3rd party applications that
+# do not support podman work without having docker installed. The podman
+# service must be enabled with: `systemctl --user enable --now podman.socket`.
+# See `man podman-system-service`.
+# export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
