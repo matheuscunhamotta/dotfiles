@@ -6,28 +6,18 @@
 - name: Install CLI tools
   hosts: localhost
   connection: local
-  become: true
   vars:
-    common_packages:
-      - stow
-      - git
-      - neovim
-      - tmux
-      - fzf
-      - ripgrep
-      - fd-find
-      - bat
-    # These vars contain packages whose names differ between distros
-    debian_specific:  # Packages with Debian/Ubuntu-specific names
-      - vim           # 'vim' in Debian/Ubuntu, 'vim-enhanced' in Fedora
-    fedora_specific:  # Packages with Fedora-specific names
-      - vim-enhanced
+    common_packages: [stow, git, neovim, tmux, fzf, ripgrep, fd-find, bat, podman]
+    debian_specific: [vim]
+    fedora_specific: [vim-enhanced]
+
   tasks:
     - name: Install required packages on Debian/Ubuntu
       apt:
         name: "{{ common_packages + debian_specific }}"
         state: present
         update_cache: true
+      become: true
       when: ansible_facts['os_family'] == 'Debian'
 
     - name: Install required packages on Fedora
@@ -35,4 +25,19 @@
         name: "{{ common_packages + fedora_specific }}"
         state: present
         update_cache: true
+      become: true
       when: ansible_facts['os_family'] == 'RedHat'
+
+    - name: Source .bash_custom in .bashrc
+      ansible.builtin.blockinfile:
+        path: ~/.bashrc
+        marker: "# {mark} ANSIBLE MANAGED BLOCK: CUSTOM CONFIG"
+        block: |
+
+          # Load custom bash stuff
+          if [ -f ~/.bash_custom ]; then
+              . ~/.bash_custom
+          fi
+        state: present
+        insertafter: EOF
+        create: yes

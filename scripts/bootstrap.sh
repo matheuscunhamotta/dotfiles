@@ -18,7 +18,7 @@ fi
 
 # Run ansible playbook
 echo "Running Ansible playbook..."
-ansible-playbook ansible/playbook.yml
+ansible-playbook ansible/playbook.yml -K
 
 # Stow dotfiles
 echo "Installing stow packages..."
