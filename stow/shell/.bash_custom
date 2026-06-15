@@ -52,3 +52,6 @@ fi
 # service must be enabled with: `systemctl --user enable --now podman.socket`.
 # See `man podman-system-service`.
 # export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
+
+# Add local binaries
+export PATH="$HOME/.local/bin:$PATH"
