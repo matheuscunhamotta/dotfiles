@@ -14,6 +14,9 @@ alias ..='cd ..'
 # -lAhv: long listing; exclude . and ..; human-readable sizes; natural sort.
 alias l='ls -lAhv --group-directories-first'
 
+# Alias tree to use gitignore.
+alias tree='tree --gitignore'
+
 # Debian renamed bat to batcat.
 bat_command=$(command -v batcat || command -v bat)
 if [[ -x "$bat_command" ]]; then
