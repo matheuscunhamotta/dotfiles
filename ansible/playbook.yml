@@ -7,7 +7,7 @@
   hosts: localhost
   connection: local
   vars:
-    common_packages: [stow, git, neovim, tmux, fzf, ripgrep, fd-find, bat, podman]
+    common_packages: [stow, git, neovim, tmux, fzf, ripgrep, fd-find, bat, podman, jq]
     debian_specific: [vim]
     fedora_specific: [vim-enhanced]
 
