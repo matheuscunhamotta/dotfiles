@@ -10,9 +10,12 @@
     common_packages: [stow, git, neovim, tmux, fzf, ripgrep, fd-find, bat, podman, jq]
     debian_specific: [vim]
     fedora_specific: [vim-enhanced]
+    extra_packages: [terraform, google-cloud-cli, gh]
+    docker_packages: [docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin]
 
   tasks:
-    - name: Install required packages on Debian/Ubuntu
+    # --- Core Package Installation (Default) ---
+    - name: Install core packages on Debian/Ubuntu
       apt:
         name: "{{ common_packages + debian_specific }}"
         state: present
@@ -20,7 +23,7 @@
       become: true
       when: ansible_facts['os_family'] == 'Debian'
 
-    - name: Install required packages on Fedora
+    - name: Install core packages on Fedora
       dnf:
         name: "{{ common_packages + fedora_specific }}"
         state: present
@@ -28,6 +31,214 @@
       become: true
       when: ansible_facts['os_family'] == 'RedHat'
 
+    # --- Keyring Directory Helper (For optional APT repos) ---
+    - name: Ensure keyring directory exists on Debian/Ubuntu
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, docker, terraform, hashicorp, gcloud, google-cloud, gh, github-cli]
+
+    # --- HashiCorp / Terraform (Optional) ---
+    - name: Add HashiCorp GPG key on Debian/Ubuntu
+      ansible.builtin.get_url:
+        url: https://apt.releases.hashicorp.com/gpg
+        dest: /etc/apt/keyrings/hashicorp.asc
+        mode: '0644'
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, terraform, hashicorp]
+
+    - name: Add HashiCorp APT repository on Debian/Ubuntu
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com {{ ansible_facts['distribution_release'] }} main"
+        state: present
+        filename: hashicorp
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, terraform, hashicorp]
+
+    - name: Add HashiCorp YUM/DNF repository on Fedora
+      yum_repository:
+        name: hashicorp
+        description: HashiCorp Stable Repository
+        baseurl: "https://rpm.releases.hashicorp.com/fedora/$releasever/$basearch/stable"
+        gpgcheck: yes
+        gpgkey: https://rpm.releases.hashicorp.com/gpg
+        enabled: yes
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, extra, terraform, hashicorp]
+
+    - name: Install Terraform on Debian/Ubuntu
+      apt:
+        name: terraform
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, terraform, hashicorp]
+
+    - name: Install Terraform on Fedora
+      dnf:
+        name: terraform
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, extra, terraform, hashicorp]
+
+    # --- Google Cloud CLI (Optional) ---
+    - name: Add Google Cloud GPG key on Debian/Ubuntu
+      ansible.builtin.get_url:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        dest: /etc/apt/keyrings/google-cloud.asc
+        mode: '0644'
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, gcloud, google-cloud]
+
+    - name: Add Google Cloud APT repository on Debian/Ubuntu
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/google-cloud.asc] https://packages.cloud.google.com/apt cloud-sdk main"
+        state: present
+        filename: google-cloud-sdk
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, gcloud, google-cloud]
+
+    - name: Add Google Cloud YUM/DNF repository on Fedora
+      yum_repository:
+        name: google-cloud-cli
+        description: Google Cloud CLI
+        baseurl: "https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-$basearch"
+        gpgcheck: yes
+        repo_gpgcheck: no
+        gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        enabled: yes
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, extra, gcloud, google-cloud]
+
+    - name: Install Google Cloud CLI on Debian/Ubuntu
+      apt:
+        name: google-cloud-cli
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, gcloud, google-cloud]
+
+    - name: Install Google Cloud CLI on Fedora
+      dnf:
+        name: google-cloud-cli
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, extra, gcloud, google-cloud]
+
+    # --- GitHub CLI (Optional) ---
+    - name: Add GitHub CLI GPG key on Debian/Ubuntu
+      ansible.builtin.get_url:
+        url: https://cli.github.com/packages/githubcli-archive-keyring.gpg
+        dest: /etc/apt/keyrings/githubcli-archive-keyring.gpg
+        mode: '0644'
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, gh, github-cli]
+
+    - name: Add GitHub CLI APT repository on Debian/Ubuntu
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
+        state: present
+        filename: github-cli
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, gh, github-cli]
+
+    - name: Add GitHub CLI YUM/DNF repository on Fedora
+      yum_repository:
+        name: gh-cli
+        description: GitHub CLI
+        baseurl: "https://cli.github.com/packages/rpm"
+        gpgcheck: yes
+        gpgkey: https://cli.github.com/packages/githubcli-archive-keyring.asc
+        enabled: yes
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, extra, gh, github-cli]
+
+    - name: Install GitHub CLI on Debian/Ubuntu
+      apt:
+        name: gh
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, extra, gh, github-cli]
+
+    - name: Install GitHub CLI on Fedora
+      dnf:
+        name: gh
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, extra, gh, github-cli]
+
+    # --- Docker Suite (Optional) ---
+    - name: Add Docker GPG key on Debian/Ubuntu
+      ansible.builtin.get_url:
+        url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, docker]
+
+    - name: Add Docker APT repository on Debian/Ubuntu
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] }} stable"
+        state: present
+        filename: docker
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, docker]
+
+    - name: Add Docker YUM/DNF repository on Fedora
+      yum_repository:
+        name: docker-ce
+        description: Docker CE Stable Repository
+        baseurl: "https://download.docker.com/linux/fedora/$releasever/$basearch/stable"
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/fedora/gpg
+        enabled: yes
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, docker]
+
+    - name: Install Docker packages on Debian/Ubuntu
+      apt:
+        name: "{{ docker_packages }}"
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      tags: [never, docker]
+
+    - name: Install Docker packages on Fedora
+      dnf:
+        name: "{{ docker_packages }}"
+        state: present
+        update_cache: true
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      tags: [never, docker]
+
+    # --- Shell Customization ---
     - name: Source .bash_custom in .bashrc
       ansible.builtin.blockinfile:
         path: ~/.bashrc
