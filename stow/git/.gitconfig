@@ -1,2 +1,13 @@
 [core]
 	editor = vim
+[alias]
+	l = log --oneline --graph --all
+	d = branch -d
+	f = fetch
+	fp = fetch --prune
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
