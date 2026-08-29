@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [master]
+
+jobs:
+  test-setup:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu
+            container: ""
+          - name: debian
+            container: "debian:bookworm"
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bootstrap script
+        run: bash scripts/bootstrap.sh
+
+      - name: Verify stow symlinks
+        run: |
+          fail=0
+          for pkg_dir in stow/*/; do
+            pkg="$(basename "$pkg_dir")"
+            while IFS= read -r -d '' file; do
+              rel="${file#"$pkg_dir"}"
+              target="$HOME/$rel"
+              if [ ! -L "$target" ]; then
+                echo "::error::missing symlink $target (package: $pkg)"
+                fail=1
+                continue
+              fi
+              if [ "$(readlink -f "$target")" != "$(readlink -f "$file")" ]; then
+                echo "::error::$target does not point into the repo (package: $pkg)"
+                fail=1
+              fi
+            done < <(find "$pkg_dir" -type f -print0)
+          done
+          exit $fail
