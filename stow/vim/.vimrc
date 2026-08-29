@@ -16,11 +16,15 @@ set formatoptions+=acjroql
 set formatoptions-=t
 
 " Turn on file type detection and related stuff. See :h filetype-overview.
-filetype plugin on
-filetype indent on
+filetype plugin indent on
 
 " Add vertical padding for the cursor.
 set scrolloff=5
+
+" Enable true color support in terminals if available.
+if has("termguicolors")
+    set termguicolors
+endif
 
 " Turn on wild menu.
 set wildmenu
@@ -28,22 +32,17 @@ set wildmenu
 " Hidden buffers by default. This allows switching buffers freely.
 set hidden
 
-" Ignore case, unless the search pattern contains an upper case character. Not
-" used for "*" and "#" though, see :h smartcase.
+" Ignore case, unless the search pattern contains an upper case character.
 set ignorecase
 set smartcase
 
-" Highlight search results.
+" Show search matches while typing and highlight results.
+set incsearch
 set hlsearch
 
-" Highlight matching bracket when cursor is on top.
+" Enable matchparen highlighting (set matchtime duration).
 set showmatch
-
-" Blink duration of brackets when cursor moves on it.
 set matchtime=1
-
-" Disable the `matchparen` plugin.
-let loaded_matchparen = 1
 
 " Reserve a column for the side fold indicator.
 set foldcolumn=1
@@ -54,11 +53,7 @@ syntax enable
 " Set utf8 encoding.
 set encoding=utf8
 
-" Save swap files in a separate directory, to avoid messing with git. The
-" reason for using the home directory is because whenever a recovery situation
-" occurs, the swap files will be in the most visible path instead of scattered
-" around multiple paths. For context, this was very useful back in 2009 with an
-" unreliable computer. See :h 'directory' for the meaning of "//".
+" Save swap files in a separate directory, to avoid messing with git.
 set directory=$HOME//
 
 " Disable auto read. Buffers better have a single source of truth.
@@ -72,8 +67,8 @@ set smarttab
 
 " Indent with 4 space characters (combo with 'expandtab' and 'smarttab').
 set shiftwidth=4
-" But 2 spaces for web files.
-autocmd BufEnter *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.svelte,*.yaml,*.html :set shiftwidth=2
+set tabstop=4
+set softtabstop=4
 
 " Use same indentation as previous line. Mostly for regular text.
 set autoindent
@@ -102,26 +97,42 @@ autocmd BufReadPost *
 " Always show the status line.
 set laststatus=2
 
-" Status line with useful information. Notice the "\" to scape characters.
+" Status line with useful information.
 set statusline=\ %t%m%r%h\ %y\ \|\ Buffer:\ %n\ \|\ Line:\ %l\ of\ %L\ --%p%%--\ \|\ Column:\ %c\ of\ %{col('$')-1}
 
-" Delete trailing white space on save.
-fun! CleanExtraSpaces()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    silent! %s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
-endfun
-autocmd BufWritePre * :call CleanExtraSpaces()
-
-" Turn on spell check. Requires slightly more memory but shouldn't be a problem
-" these days. See :h spell.
+" Turn on spell check. Toggle with <leader>s.
 set spell
 set spelllang=en_us
-" Command to toggle spell check on a buffer. Because sometimes spell
-" highlighting is distracting.
-map <leader>s :setlocal spell!<CR>
 
-" A reduced brightness built-in theme. Another option: `slate`.
-"colorscheme habamax
+" Non-recursive Key Mappings
+nnoremap <leader><CR> :noh<CR>
+nnoremap <leader>j :bnext<CR>
+nnoremap <leader>k :bprevious<CR>
+nnoremap <leader>l :ls<CR>
+nnoremap <leader>s :setlocal spell!<CR>
+
+" Delete trailing white space on save.
+function! CleanExtraSpaces()
+    if !&binary && &filetype !=# 'diff'
+        let l:save_cursor = getpos(".")
+        keepjumps %s/\s\+$//e
+        call setpos('.', l:save_cursor)
+    endif
+endfunction
+
+" Autocommand group to prevent duplicate autocommands when re-sourcing .vimrc
+augroup VimInitAutocmds
+    autocmd!
+
+    " 2 spaces indentation for web/markup files.
+    autocmd FileType javascript,javascriptreact,typescript,typescriptreact,css,less,scss,json,graphql,markdown,vue,svelte,yaml,html setlocal shiftwidth=2 tabstop=2 softtabstop=2
+
+    " Restore cursor position after reading any file. See :h restore-cursor.
+    autocmd BufReadPost * if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit' | exe "normal! g`\"" | endif
+
+    " Clean trailing whitespaces on save.
+    autocmd BufWritePre * call CleanExtraSpaces()
+augroup END
+
+" Colorscheme option
+colorscheme habamax
