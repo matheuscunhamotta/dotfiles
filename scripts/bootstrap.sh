@@ -9,7 +9,7 @@ SUDO="sudo"
 if ! command -v ansible >/dev/null 2>&1; then
   echo "Ansible not found. Installing..."
   if [ -f /etc/debian_version ]; then
-    $SUDO apt-get update && $SUDO apt-get install -y ansible python3-apt
+    $SUDO apt-get update && $SUDO apt-get install -y ansible python3-apt python3-debian
   elif [ -f /etc/fedora-release ] || [ -f /etc/redhat-release ]; then
     $SUDO dnf install -y ansible
   else
