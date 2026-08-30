@@ -31,26 +31,7 @@
       become: true
       when: ansible_facts['os_family'] == 'RedHat'
 
-    # --- Keyring Directory Helper (For optional APT repos) ---
-    - name: Ensure keyring directory exists on Debian/Ubuntu
-      ansible.builtin.file:
-        path: /etc/apt/keyrings
-        state: directory
-        mode: '0755'
-      become: true
-      when: ansible_facts['os_family'] == 'Debian'
-      tags: [never, extra, docker, terraform, hashicorp, gcloud, google-cloud, gh, github-cli]
-
     # --- HashiCorp / Terraform (Optional) ---
-    - name: Add HashiCorp GPG key on Debian/Ubuntu
-      ansible.builtin.get_url:
-        url: https://apt.releases.hashicorp.com/gpg
-        dest: /etc/apt/keyrings/hashicorp.asc
-        mode: '0644'
-      become: true
-      when: ansible_facts['os_family'] == 'Debian'
-      tags: [never, extra, terraform, hashicorp]
-
     - name: Add HashiCorp APT repository on Debian/Ubuntu
       ansible.builtin.deb822_repository:
         name: hashicorp
@@ -58,7 +39,7 @@
         uris: ["https://apt.releases.hashicorp.com"]
         suites: ["{{ ansible_facts['distribution_release'] }}"]
         components: [main]
-        signed_by: /etc/apt/keyrings/hashicorp.asc
+        signed_by: https://apt.releases.hashicorp.com/gpg
         state: present
       become: true
       when: ansible_facts['os_family'] == 'Debian'
@@ -95,15 +76,6 @@
       tags: [never, extra, terraform, hashicorp]
 
     # --- Google Cloud CLI (Optional) ---
-    - name: Add Google Cloud GPG key on Debian/Ubuntu
-      ansible.builtin.get_url:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        dest: /etc/apt/keyrings/google-cloud.asc
-        mode: '0644'
-      become: true
-      when: ansible_facts['os_family'] == 'Debian'
-      tags: [never, extra, gcloud, google-cloud]
-
     - name: Add Google Cloud APT repository on Debian/Ubuntu
       ansible.builtin.deb822_repository:
         name: google-cloud-sdk
@@ -111,7 +83,7 @@
         uris: ["https://packages.cloud.google.com/apt"]
         suites: [cloud-sdk]
         components: [main]
-        signed_by: /etc/apt/keyrings/google-cloud.asc
+        signed_by: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
       become: true
       when: ansible_facts['os_family'] == 'Debian'
@@ -149,15 +121,6 @@
       tags: [never, extra, gcloud, google-cloud]
 
     # --- GitHub CLI (Optional) ---
-    - name: Add GitHub CLI GPG key on Debian/Ubuntu
-      ansible.builtin.get_url:
-        url: https://cli.github.com/packages/githubcli-archive-keyring.gpg
-        dest: /etc/apt/keyrings/githubcli-archive-keyring.gpg
-        mode: '0644'
-      become: true
-      when: ansible_facts['os_family'] == 'Debian'
-      tags: [never, extra, gh, github-cli]
-
     - name: Add GitHub CLI APT repository on Debian/Ubuntu
       ansible.builtin.deb822_repository:
         name: github-cli
@@ -165,7 +128,7 @@
         uris: ["https://cli.github.com/packages"]
         suites: [stable]
         components: [main]
-        signed_by: /etc/apt/keyrings/githubcli-archive-keyring.gpg
+        signed_by: https://cli.github.com/packages/githubcli-archive-keyring.gpg
         state: present
       become: true
       when: ansible_facts['os_family'] == 'Debian'
@@ -202,15 +165,6 @@
       tags: [never, extra, gh, github-cli]
 
     # --- Docker Suite (Optional) ---
-    - name: Add Docker GPG key on Debian/Ubuntu
-      ansible.builtin.get_url:
-        url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
-        dest: /etc/apt/keyrings/docker.asc
-        mode: '0644'
-      become: true
-      when: ansible_facts['os_family'] == 'Debian'
-      tags: [never, docker]
-
     - name: Add Docker APT repository on Debian/Ubuntu
       ansible.builtin.deb822_repository:
         name: docker
@@ -218,7 +172,7 @@
         uris: ["https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}"]
         suites: ["{{ ansible_facts['distribution_release'] }}"]
         components: [stable]
-        signed_by: /etc/apt/keyrings/docker.asc
+        signed_by: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
         state: present
       become: true
       when: ansible_facts['os_family'] == 'Debian'
