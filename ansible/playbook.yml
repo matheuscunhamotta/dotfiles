@@ -52,10 +52,14 @@
       tags: [never, extra, terraform, hashicorp]
 
     - name: Add HashiCorp APT repository on Debian/Ubuntu
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com {{ ansible_facts['distribution_release'] }} main"
+      ansible.builtin.deb822_repository:
+        name: hashicorp
+        types: [deb]
+        uris: ["https://apt.releases.hashicorp.com"]
+        suites: ["{{ ansible_facts['distribution_release'] }}"]
+        components: [main]
+        signed_by: /etc/apt/keyrings/hashicorp.asc
         state: present
-        filename: hashicorp
       become: true
       when: ansible_facts['os_family'] == 'Debian'
       tags: [never, extra, terraform, hashicorp]
@@ -101,10 +105,14 @@
       tags: [never, extra, gcloud, google-cloud]
 
     - name: Add Google Cloud APT repository on Debian/Ubuntu
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/google-cloud.asc] https://packages.cloud.google.com/apt cloud-sdk main"
+      ansible.builtin.deb822_repository:
+        name: google-cloud-sdk
+        types: [deb]
+        uris: ["https://packages.cloud.google.com/apt"]
+        suites: [cloud-sdk]
+        components: [main]
+        signed_by: /etc/apt/keyrings/google-cloud.asc
         state: present
-        filename: google-cloud-sdk
       become: true
       when: ansible_facts['os_family'] == 'Debian'
       tags: [never, extra, gcloud, google-cloud]
@@ -151,10 +159,14 @@
       tags: [never, extra, gh, github-cli]
 
     - name: Add GitHub CLI APT repository on Debian/Ubuntu
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
+      ansible.builtin.deb822_repository:
+        name: github-cli
+        types: [deb]
+        uris: ["https://cli.github.com/packages"]
+        suites: [stable]
+        components: [main]
+        signed_by: /etc/apt/keyrings/githubcli-archive-keyring.gpg
         state: present
-        filename: github-cli
       become: true
       when: ansible_facts['os_family'] == 'Debian'
       tags: [never, extra, gh, github-cli]
@@ -200,10 +212,14 @@
       tags: [never, docker]
 
     - name: Add Docker APT repository on Debian/Ubuntu
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] }} stable"
+      ansible.builtin.deb822_repository:
+        name: docker
+        types: [deb]
+        uris: ["https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}"]
+        suites: ["{{ ansible_facts['distribution_release'] }}"]
+        components: [stable]
+        signed_by: /etc/apt/keyrings/docker.asc
         state: present
-        filename: docker
       become: true
       when: ansible_facts['os_family'] == 'Debian'
       tags: [never, docker]
