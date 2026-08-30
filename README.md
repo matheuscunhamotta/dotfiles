@@ -46,15 +46,15 @@ This will:
 
 3. **Stow packages:**
 	```sh
-	stow -d stow -t ~ <package name>
+	stow --no-folding -d stow -t ~ <package name>
 	```
-	- Example: `stow -d stow -t ~ vim`
+	- Example: `stow --no-folding -d stow -t ~ vim`
 
 4. **If stow refuses to create symlinks due to conflicts:**
 	- `git stash -u` # [Optional] Stash working directory changes, if any.
-	- `stow --adopt -d stow -t ~ <package name>` # Adopt upstream files.
+	- `stow --adopt --no-folding -d stow -t ~ <package name>` # Adopt upstream files.
 	- `git restore .` # Restore local files.
-	- `stow -d stow -t ~ <package name>` # Try to stow again.
+	- `stow --no-folding -d stow -t ~ <package name>` # Try to stow again.
 	- `git stash pop` # [Optional] Restore stashed changes.
 
 ## License
