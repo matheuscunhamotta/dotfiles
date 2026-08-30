@@ -36,12 +36,12 @@ echo "Installing stow packages..."
 for pkg in stow/*; do
   if [ -d "$pkg" ]; then
     pkgname="$(basename "$pkg")"
-    if ! stow -d stow -t "$HOME" "$pkgname" 2>/dev/null; then
+    if ! stow --no-folding -d stow -t "$HOME" "$pkgname" 2>/dev/null; then
       echo "Conflict detected for package $pkgname. Following README conflict resolution steps..."
       git stash -u
-      stow --adopt -d stow -t "$HOME" "$pkgname"
+      stow --adopt --no-folding -d stow -t "$HOME" "$pkgname"
       git restore .
-      stow -d stow -t "$HOME" "$pkgname"
+      stow --no-folding -d stow -t "$HOME" "$pkgname"
       git stash pop || true
     fi
   fi

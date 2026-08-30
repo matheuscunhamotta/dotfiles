@@ -18,10 +18,13 @@ jobs:
             container: "fedora:latest"
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
+    defaults:
+      run:
+        shell: bash
     env:
       DEBIAN_FRONTEND: noninteractive
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Run bootstrap script
         run: bash scripts/bootstrap.sh

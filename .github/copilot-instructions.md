@@ -17,13 +17,13 @@ This repository manages personal dotfiles and system setup using a structured ap
   - Installs stow if needed, stows all packages from `stow/`, and (optionally) runs Ansible.
 - **Stow a single package:**
   ```sh
-  stow -d stow -t ~ <package>
+  stow --no-folding -d stow -t ~ <package>
   ```
 - **Resolve stow conflicts:**
   1. `git stash -u` (optional)
-  2. `stow --adopt -d stow -t ~ <package>`
+  2. `stow --adopt --no-folding -d stow -t ~ <package>`
   3. `git restore .`
-  4. `stow -d stow -t ~ <package>`
+  4. `stow --no-folding -d stow -t ~ <package>`
   5. `git stash pop` (optional)
 - **Provision with Ansible:**
   ```sh
@@ -38,7 +38,7 @@ This repository manages personal dotfiles and system setup using a structured ap
 - Document non-obvious customizations in package README or config comments.
 
 ## Examples
-- Add a new Vim config: place in `stow/vim/` and restow: `stow -d stow -t ~ vim`
+- Add a new Vim config: place in `stow/vim/` and restow: `stow --no-folding -d stow -t ~ vim`
 - Add a new Ansible role: place in `ansible/roles/` and reference in `playbook.yml`
 - Add a new bootstrap step: edit `scripts/bootstrap.sh`
 
